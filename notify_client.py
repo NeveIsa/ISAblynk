@@ -66,7 +66,7 @@ def handle_event(event):
     if pin=="vw0":
         #value = message notification
         notify.postboard(value)
-        print("posted -> ",value)
+        print("posted ->",value)
 
     elif pinname=='vw':
         if pinno == '1':
@@ -75,7 +75,8 @@ def handle_event(event):
             G = value
         elif pinno == '3':
             B = value
-            
+        
+        print("NeoPixel -> r:%s - g:%s - b:%s" % (R,G,B))
         npled.glow(r=R,g=G,b=B)
     
 

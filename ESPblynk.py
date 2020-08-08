@@ -21,8 +21,8 @@ class MSGSTATUS:
 class blynkDevice:
 	server='blynk-cloud.com'
 	port=8442
-	port=80
-	server='188.166.206.43'
+	#port=80
+	#server='188.166.206.43'
 	sock=None
 	token=None
 	msgID=0
@@ -137,7 +137,7 @@ class blynkDevice:
 				msg=self.rx(length_of_msg)
 				new_ip,new_port = msg.split("\0")
 				print ("=== New IP : new Port -> %s : %s ===" % (new_ip,new_port))
-				self.server,self.port = new_ip,new_port #update with new IP and Port
+				self.server,self.port = new_ip,int(new_port) #update with new IP and Port
 				print ("New IP and Port set. Next attempt to connect will use new settings...")
 				self.connected=False
 				return False
@@ -213,7 +213,7 @@ class blynkDevice:
 						print ("Pin Mode Command Received...An APP just connected to this BlynkDevice..")
 						return True
 					if callback:
-						print(result)
+						#print(result)
 						callback(result)
 					else:
 						print (result)

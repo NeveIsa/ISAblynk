@@ -125,10 +125,11 @@ class blynkDevice:
 			if response[0]==MSGTYPE.CONNECT_REDIRECT:
 				print ("CONNECT_REDIRECT command received...")
 				length_of_msg = response[2]
-				msg=self.rx(length_of_msg)
+				msg=self.rx(length_of_msg).decode()
+				print(msg)
 				new_ip,new_port = msg.split("\0")
 				print ("=== New IP : new Port -> %s : %s ===" % (new_ip,new_port))
-				self.server,self.port = new_ip,new_port #update with new IP and Port
+				self.server,self.port = new_ip, int(new_port) #update with new IP and Port
 				print ("New IP and Port set. Next attempt to connect will use new settings...")
 				self.connected=False
 				return False
@@ -226,7 +227,8 @@ def setup(token,callback=None):
 	dev.connect()
 	while not dev.auth():
 		dev.connect()
-		dev.ping()
+	
+	dev.ping()
 	
 	print ("Delegating to 'manage' method...")
 
