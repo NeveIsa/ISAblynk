@@ -155,7 +155,7 @@ class blynkDevice:
 				return False
 
 		except Exception as e:
-			print ("Auth exception",e)
+			print ("Auth exception->",e)
 			self.connected=False
 			return False
 
@@ -213,6 +213,7 @@ class blynkDevice:
 						print ("Pin Mode Command Received...An APP just connected to this BlynkDevice..")
 						return True
 					if callback:
+						print(result)
 						callback(result)
 					else:
 						print (result)
@@ -221,7 +222,7 @@ class blynkDevice:
 					return False
 
 		except Exception as e:
-			print ("Exception in manage",e)
+			print ("Exception in manage ->",e)
 
 def setup(token,callback=None):
 	dev = blynkDevice(token)

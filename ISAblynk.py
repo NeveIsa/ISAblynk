@@ -14,7 +14,7 @@ class MSGSTATUS:
 
 class blynkDevice:
 	server='blynk-cloud.com'
-	server='188.166.206.43'
+	#server='188.166.206.43'
 	port=8442
 	#port=80
 	sock=None
@@ -147,7 +147,7 @@ class blynkDevice:
 				return False
 
 		except Exception as e:
-			print ("Auth exception",e)
+			print ("Auth exception ->",e)
 			self.connected=False
 			return False
 

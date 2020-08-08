@@ -24,7 +24,7 @@ class Notify:
 
     def postboard(self,text):
         self.terminal.println(text,self.postboard_linepos)
-        print(self.postboard_linepos)
+        #print(self.postboard_linepos)
         self.postboard_linepos+=1
         self.postboard_linepos = self.postboard_linestart + (self.postboard_linepos - self.postboard_linestart) % (self.postboard_lineend - self.postboard_linestart)
 
@@ -37,9 +37,9 @@ class NPled:
         self.nleds=no_of_leds
         self.np = neopixel.NeoPixel(machine.Pin(pin),no_of_leds)
 
-    def glow(self,r=100,g=100,b=100,alpha=1,led_id=0):
-        r,g,b = list(map(int,map(lambda: c * alpha,[r,g,b])))
-        map(lambda i: np.__setitem__(i,(r,g,b)),range(self.nleds)) # this is so chhhhoooooool
+    def glow(self,r=100,g=100,b=100,alpha=1,led_id=None):
+        r,g,b = list(map(int,map(lambda c: c * alpha,[r,g,b])))
+        list(map(lambda i: self.np.__setitem__(i,(r,g,b)),range(self.nleds))) # this is so chhhhoooooool
         self.np.write()    
 
 
@@ -66,6 +66,7 @@ def handle_event(event):
     if pin=="vw0":
         #value = message notification
         notify.postboard(value)
+        print("posted -> ",value)
 
     elif pinname=='vw':
         if pinno == '1':
@@ -75,7 +76,7 @@ def handle_event(event):
         elif pinno == '3':
             B = value
             
-        npled.glow(R,G,B)
+        npled.glow(r=R,g=G,b=B)
     
 
 
