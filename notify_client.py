@@ -102,4 +102,11 @@ npled = NPled(config["NEOPIN"])
 # set global colors
 R,G,B = 0,0,0
 
-ISAblynk.setup(TOKEN,callback=handle_event)
+ISAblynk.setup(TOKEN)
+
+while True:
+    if ISAblynk.EVENTS:
+        for _ in range(len(ISAblynk.EVENTS)):
+            ev=ISAblynk.EVENTS[0] # clear
+            handle_event(ev)
+            ISAblynk.EVENTS = ISAblynk.EVENTS[1:]

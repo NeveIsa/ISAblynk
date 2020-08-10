@@ -1,4 +1,7 @@
-import socket,time,sys
+import socket,time,sys,_thread
+
+## Global events queue
+EVENTS=[]
 
 class MSGTYPE:
 	RSP    = 0
@@ -20,6 +23,9 @@ class blynkDevice:
 	sock=None
 	token=None
 	msgID=0
+
+	#keep track of errors
+	errorCount = 0
 
 	connected=False
 
@@ -62,6 +68,7 @@ class blynkDevice:
 	def deframe(self,payload):
 		if len(payload)<5:
 			print ("deframe payload header is less than 5 bytes..error")
+			self.errorCount+=1
 			return (0,0,0)
 		try:
 			msgtype=payload[0]
@@ -180,7 +187,7 @@ class blynkDevice:
 		return (pinCmdType,pinNo,pinValue)
 
 
-	def manage(self,callback=None):
+	def manage(self):
 		try:
 			if not self.connected:
 				print ("(Re)connecting...")
@@ -191,8 +198,7 @@ class blynkDevice:
 				#return
 				#print response,data
 				if response:
-					if not callback:
-						print (response)
+					pass
 				else:
 					self.ping()
 					return False
@@ -208,10 +214,11 @@ class blynkDevice:
 					if(result[0])=="pm":
 						print ("Pin Mode Command Received...An APP just connected to this BlynkDevice..")
 						return True
-					if callback:
-						callback(result)
-					else:
-						print (result)
+
+					### Insert in EVENTS queue
+					EVENTS.append(result)
+					#print (result)
+
 					return result
 				else:
 					return False
@@ -224,27 +231,33 @@ class blynkDevice:
 
 def setup(token,callback=None):
 	dev = blynkDevice(token)
-	dev.connect()
-	while not dev.auth():
+
+	def initialize():
 		dev.connect()
+		while not dev.auth():
+			dev.connect()
 	
-	dev.ping()
+		dev.ping()
 	
+
 	print ("Delegating to 'manage' method...")
+	initialize()
 
-	def myprint(x):
-		if callback:
-			callback(x)
-		else:
-			print (x)
+	def loop():
+		try:
+			while 1:
+				dev.manage()
+				time.sleep(0.2)
 
-	try:
-		while 1:
-			dev.manage(myprint)
-	except KeyboardInterrupt:
-		print ("Closing connection...")
-		dev.sock.close()
-		print ("Graceful shutdown...")
+				if dev.errorCount >=5:
+					initialize()
+
+		except KeyboardInterrupt:
+			print ("Closing connection...")
+			dev.sock.close()
+			print ("Graceful shutdown...")
+
+	_thread.start_new_thread(loop,())
 
 
 
@@ -260,5 +273,11 @@ if __name__=="__main__":
 
 
 	TOKEN = conf["TOKEN"]
-	setup(TOKEN,callback)
+	setup(TOKEN)
+	while True:
+		time.sleep(0.1)
+		for _ in range(len(EVENTS)):
+			ev = EVENTS[0]
+			print(ev)
+			EVENTS = EVENTS[1:]
 
