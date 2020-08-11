@@ -20,7 +20,7 @@ class blynkDevice:
 	#server='188.166.206.43'
 	port=8442
 	#port=80
-	sock=None
+	sock=Noneteen amateur
 	token=None
 	msgID=0
 
@@ -250,7 +250,9 @@ def setup(token,callback=None):
 				time.sleep(0.2)
 
 				if dev.errorCount >=5:
+					time.sleep(5)
 					initialize()
+					dev.errorCount=0 #reset
 
 		except KeyboardInterrupt:
 			print ("Closing connection...")

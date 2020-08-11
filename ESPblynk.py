@@ -249,7 +249,9 @@ def setup(token):
 				dev.manage()
 				time.sleep_ms(200)
 				if dev.errorCount>=5:
+					time.sleep(5)
 					initialize()
+					dev.errorCount=0 #reset
 
 		except KeyboardInterrupt:
 			print ("Closing connection...")
