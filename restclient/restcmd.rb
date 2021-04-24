@@ -21,7 +21,7 @@ when "update"
 when "status"
   url=urlBase+"/isHardwareConnected"
 else
-  print "ARGS -> status | update (pin) (value)\n"
+  print "ARGS -> status | update (pin, eg: v10) (value, eg: 1023)\n"
   exit  
 end 
 

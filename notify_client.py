@@ -6,7 +6,7 @@ import time
 import ujson
 
 import neopixel
-
+import gpio_client
 import join_network
 import ESPblynk as ISAblynk
 
@@ -63,12 +63,15 @@ def handle_event(event):
 
     global R,G,B
 
+    processed = False
+
     if pin=="vw0":
         #value = message notification
         notify.postboard(value)
         print("posted ->",value)
+        processed=True
 
-    elif pinname=='vw':
+    elif pinname=='vw' and pinno in ['1','2','3']:
         if pinno == '1':
             R = value
         elif pinno == '2':
@@ -78,9 +81,26 @@ def handle_event(event):
         
         print("NeoPixel -> r:%s - g:%s - b:%s" % (R,G,B))
         npled.glow(r=R,g=G,b=B)
-    
+        processed=True
 
+    return processed
 
+def handle_gpio(event):
+    pinname = event[0]
+    pinno = event[1]
+    pin = pinname + pinno
+
+    value = event[2]
+
+    if pinname=='vw':
+        if pinno==str(DPIN):
+            print('dwrite',pin,value)
+            gpio_client.digital_write(DPIN,value)
+        elif pinno==str(APIN):
+            print('awrite',pin,value)
+            gpio_client.analog_write(APIN,value)
+
+    print("pin:value -> " + pin + ":" + str(value))
 
 ### MAIN CODE
 
@@ -97,10 +117,13 @@ join_network.join(SSID,PASS)
 intro(SSID)
 
 notify = Notify(term)
-npled = NPled(config["NEOPIN"])
 
+npled = NPled(config["NEOPIN"])
 # set global colors
 R,G,B = 0,0,0
+
+DPIN = config["DIGITALPIN"]
+APIN = config["ANALOGPIN"]
 
 ISAblynk.setup(TOKEN)
 
@@ -108,5 +131,9 @@ while True:
     if ISAblynk.EVENTS:
         for _ in range(len(ISAblynk.EVENTS)):
             ev=ISAblynk.EVENTS[0] # clear
-            handle_event(ev)
+
+            already_processed = handle_event(ev)
+            if not already_processed:
+                handle_gpio(ev)
+                
             ISAblynk.EVENTS = ISAblynk.EVENTS[1:]

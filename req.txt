@@ -1,0 +1,2 @@
+mpfshell
+adafruit-ampy
