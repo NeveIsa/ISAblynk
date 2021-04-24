@@ -52,6 +52,7 @@ class blynkDevice:
 				self.sock.connect(socket.getaddrinfo(self.server,self.port)[0][-1])
 			except:
 				print("exception in connect -> Failed to create new socket...")
+				machine.reset()
 			if self.sock:
 				print ("Connected...")
 				return True

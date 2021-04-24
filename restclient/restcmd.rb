@@ -22,6 +22,7 @@ when "status"
   url=urlBase+"/isHardwareConnected"
 else
   print "ARGS -> status | update (pin, eg: v10) (value, eg: 1023)\n"
+  print "Check ../config.json for Virtual Pin mappings for Digital and Analog Writes"
   exit  
 end 
 
